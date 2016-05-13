@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="compile" name="hadoop">
+    <property environment="env"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="hadoop.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="../../../Downloads/hadoop-2.7.2/share/hadoop/common/hadoop-common-2.7.2.jar"/>
+        <pathelement location="../../../Downloads/hadoop-2.7.2/share/hadoop/hdfs/hadoop-hdfs-2.7.2.jar"/>
+        <pathelement location="../../../Downloads/hadoop-2.7.2/share/hadoop/mapreduce/hadoop-mapreduce-client-common-2.7.2.jar"/>
+        <pathelement location="../../../Downloads/hadoop-2.7.2/share/hadoop/mapreduce/hadoop-mapreduce-client-core-2.7.2.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="compile"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="hadoop.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <!--<target name="run">
+        <java classname="hadoopsn" failonerror="true" fork="yes">
+    	<java jar="jar/hadoop.jar" fork="true">
+            <classpath refid="hadoop.classpath"/>
+    		<jvmarg value="-verbose:class"/>
+        </java>
+    </target>-->
+	<target depends="compile" name="jar">
+		<jar destfile="jar/hadoop.jar" basedir="bin">
+		<manifest>
+		<attribute name="Main-Class" value="hadoopsn"/>
+		</manifest>
+		</jar>
+		</target>
+</project>
